@@ -6,6 +6,19 @@ use DoctrineExtensions\Tests\Query\MysqlTestCase;
 
 class OverTest extends MysqlTestCase
 {
+    public function testPartitionBy(): void
+    {
+        $this->assertDqlProducesSql(
+            'SELECT OVER(LEAD(COUNT(b.id)), PARTITION BY b.id ORDER BY b.id DESC) from DoctrineExtensions\Tests\Entities\Blank b',
+            'SELECT LEAD(COUNT(b0_.id)) OVER (PARTITION BY b0_.id ORDER BY b0_.id DESC) AS sclr_0 FROM Blank b0_'
+        );
+
+        $this->assertDqlProducesSql(
+            'SELECT OVER(LEAD(COUNT(b.id)), PARTITION BY COUNT(b.id) ORDER BY COUNT(b.id) DESC) from DoctrineExtensions\Tests\Entities\Blank b',
+            'SELECT LEAD(COUNT(b0_.id)) OVER (PARTITION BY COUNT(b0_.id) ORDER BY COUNT(b0_.id) DESC) AS sclr_0 FROM Blank b0_'
+        );
+    }
+
     public function testLead(): void
     {
         $this->assertDqlProducesSql(
